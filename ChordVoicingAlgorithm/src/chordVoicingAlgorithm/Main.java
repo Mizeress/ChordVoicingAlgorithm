@@ -2,7 +2,6 @@ package chordVoicingAlgorithm;
 
 import java.util.List;
 
-import chordVoicingAlgorithm.guitar.ChordVoicingAlgorithm;
 import chordVoicingAlgorithm.guitar.Fretboard;
 
 public class Main {
@@ -18,7 +17,7 @@ public class Main {
 		System.out.println("A Occurences");
 		displayNoteOccurences(aOccurences);
 		
-		ChordVoicingAlgorithm cva = new ChordVoicingAlgorithm(new String[] {"A", "E", "C#"}, fretboard, 5);
+		ChordVoicingAlgorithm cva = new ChordVoicingAlgorithm(new String[] {"G", "B", "D", "F"}, fretboard, 5);
 		
 		displayVoicings(cva.voicings);
 		
@@ -26,6 +25,9 @@ public class Main {
 	}
 	
 	private static void displayVoicings(List<List<List<Integer>>> voicings) {
+		
+		System.out.println("Found " + voicings.size() + " voicings");
+		
 		for(List<List<Integer>> chord : voicings) {
 			System.out.print("Chord: ");
 			for(List<Integer> note : chord) {
