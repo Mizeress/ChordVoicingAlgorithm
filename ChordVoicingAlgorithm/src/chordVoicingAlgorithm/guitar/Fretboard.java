@@ -72,14 +72,14 @@ public class Fretboard {
 	 * @param note The note to search for
 	 * @return a list of all notes found in the form of {stringIndex, fretNumber}
 	 */
-	public List<List<Integer>> findNoteOccurences(String note) {
+	public List<FretNote> findNoteOccurences(String note) {
 		
-		List<List<Integer>> foundNotes = new ArrayList<>();
+		List<FretNote> foundNotes = new ArrayList<>();
 		
 		for(int i = 0; i < fretboard.length; i++) {
 			for (int j = 0; j < fretboard[i].length; j++) {
 				if(fretboard[i][j] == note) {
-					foundNotes.add(Arrays.asList(i, j));
+					foundNotes.add(new FretNote(i, j));
 				}
 			}
 		}

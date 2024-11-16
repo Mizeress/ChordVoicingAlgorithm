@@ -2,7 +2,9 @@ package chordVoicingAlgorithm;
 
 import java.util.List;
 
+import chordVoicingAlgorithm.guitar.Chord;
 import chordVoicingAlgorithm.guitar.Fretboard;
+import chordVoicingAlgorithm.guitar.FretNote;
 
 public class Main {
 
@@ -12,25 +14,24 @@ public class Main {
 		
 		System.out.println(fretboard);
 		
-		List<List<Integer>> aOccurences = fretboard.findNoteOccurences("A");
+		ChordVoicingAlgorithm cva = new ChordVoicingAlgorithm(new String[] {"A", "E"}, fretboard, 3);
 		
-		System.out.println("A Occurences");
-		displayNoteOccurences(aOccurences);
-		
-		ChordVoicingAlgorithm cva = new ChordVoicingAlgorithm(new String[] {"G", "B", "D", "F"}, fretboard, 5);
+		System.out.println();
 		
 		displayVoicings(cva.voicings);
 		
 
 	}
 	
-	private static void displayVoicings(List<List<List<Integer>>> voicings) {
+	private static void displayVoicings(List<Chord> voicings) {
 		
 		System.out.println("Found " + voicings.size() + " voicings");
 		
-		for(List<List<Integer>> chord : voicings) {
+		System.out.println();
+		
+		for(Chord chord : voicings) {
 			System.out.print("Chord: ");
-			for(List<Integer> note : chord) {
+			for(FretNote note : chord.getChord()) {
 				System.out.print(note + " ");
 			}
 			System.out.println();
@@ -38,9 +39,9 @@ public class Main {
 	}
 	
 	
-	private static void displayNoteOccurences(List<List<Integer>> occurences) {
-		for(List<Integer> note : occurences) {
-			System.out.println("String: " + note.get(0) + " Fret: " + note.get(1));
+	private static void displayNoteOccurences(List<FretNote> aOccurences) {
+		for(FretNote note : aOccurences) {
+			System.out.println("String: " + note.getStringNum() + " Fret: " + note.getFretNum());
 		}
 	}
 

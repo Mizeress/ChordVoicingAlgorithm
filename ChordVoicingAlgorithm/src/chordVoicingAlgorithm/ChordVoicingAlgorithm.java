@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import chordVoicingAlgorithm.guitar.Chord;
 import chordVoicingAlgorithm.guitar.Fretboard;
+import chordVoicingAlgorithm.guitar.FretNote;
 
 public class ChordVoicingAlgorithm {
 
@@ -16,7 +18,7 @@ public class ChordVoicingAlgorithm {
 	
 	int maxDistance; 
 	
-	public List<List<List<Integer>>> voicings;
+	public List<Chord> voicings;
 	
 	/**
 	 * Searches for voicings of chord on given fretboard.
@@ -34,9 +36,9 @@ public class ChordVoicingAlgorithm {
 		findVoicings(chord, fretboard, maxDistance);
 	}
 	
-	 
+	
 	void findVoicings(String[] chord, Fretboard fretboard, int maxDistance) {
-		List<List<List<Integer>>> noteOccurences = new ArrayList<>();
+		List<List<FretNote>> noteOccurences = new ArrayList<>();
 		
 		for(String note : chord) {
 			noteOccurences.add(fretboard.findNoteOccurences(note));
@@ -48,31 +50,29 @@ public class ChordVoicingAlgorithm {
 	}
 	
 	//Used to track the note stack during recursion
-	class ChordVoicingRecursion {
-		List<Integer> note;
+	private class ChordVoicingRecursion {
+		FretNote note;
 		ChordVoicingRecursion previous;
 		
-		public ChordVoicingRecursion(List<Integer> note) {
+		public ChordVoicingRecursion(FretNote note) {
 			this.note = note;
 			previous = null;
 		}
 		
-		public ChordVoicingRecursion(List<Integer> note, ChordVoicingRecursion previous) {
+		public ChordVoicingRecursion(FretNote note, ChordVoicingRecursion previous) {
 			this.note = note;
 			this.previous = previous;
 		}
-		
-		
 	}
 	
 	/**
 	 * The base case of a recursive method to find chord voicings
 	 * @param noteOccurences All occurences of the notes in the desired chord
 	 */
-	private void recursiveFindVoicing(List<List<List<Integer>>> noteOccurences) {
+	private void recursiveFindVoicing(List<List<FretNote>> noteOccurences) {
 		int depth = 0;
 		
-		for(List<Integer> note : noteOccurences.get(depth)) {
+		for(FretNote note : noteOccurences.get(depth)) {
 			ChordVoicingRecursion cvr = new ChordVoicingRecursion(note);
 			
 			recursiveFindVoicing(noteOccurences, cvr, depth + 1);
@@ -87,21 +87,23 @@ public class ChordVoicingAlgorithm {
 	 * @param previous The previous note in the recursion stack
 	 * @param depth What level of recursion the method is at
 	 */
-	private void recursiveFindVoicing(List<List<List<Integer>>> noteOccurences, ChordVoicingRecursion previous, int depth) {
+	private void recursiveFindVoicing(List<List<FretNote>> noteOccurences, ChordVoicingRecursion previous, int depth) {
 
-		for(List<Integer> note : noteOccurences.get(depth)) {
+		for(FretNote note : noteOccurences.get(depth)) {
 			ChordVoicingRecursion cvr = new ChordVoicingRecursion(note, previous);
 			if(depth < chord.length - 1) {
 				recursiveFindVoicing(noteOccurences, cvr, depth + 1);
 			} else {
-				List<List<Integer>> chordVoicing = new ArrayList<>();
+				List<FretNote> chordVoicing = new ArrayList<>();
 				while(cvr != null) {
 					chordVoicing.add(cvr.note);
 					cvr = cvr.previous;
 				}
 				
-				if(isValidVoicing(chordVoicing, maxDistance)) {
-					voicings.add(chordVoicing);
+				Chord chord = new Chord(chordVoicing);
+				
+				if(isValidVoicing(chord, maxDistance)) {
+					voicings.add(chord);
 				}
 				
 			}
@@ -115,7 +117,7 @@ public class ChordVoicingAlgorithm {
 	 * @param maxDistance The maximum distance between notes that is considered valid
 	 * @return Whether the voicing is valid
 	 */
-	private static boolean isValidVoicing(List<List<Integer>> notes, int maxDistance) {
+	private static boolean isValidVoicing(Chord notes, int maxDistance) {
 		if(difStrings(notes) && maxStretch(notes) <= maxDistance) {
 			return true;
 		}
@@ -129,14 +131,14 @@ public class ChordVoicingAlgorithm {
 	 * @param notes List of notes
 	 * @return whether all notes are on different strings
 	 */
-	private static boolean difStrings(List<List<Integer>> notes) {		
+	private static boolean difStrings(Chord notes) {		
 		Map<Integer, Integer> noteNonDuplicate = new HashMap<>();
 		
-		for(List<Integer> note : notes) {
-			noteNonDuplicate.put(note.get(0), note.get(1));
+		for(FretNote note : notes.getChord()) {
+			noteNonDuplicate.put(note.getStringNum(), note.getFretNum());
 		}
 		
-		return noteNonDuplicate.size() == notes.size();
+		return noteNonDuplicate.size() == notes.getChord().size();
 		
 	}
 	
@@ -145,11 +147,11 @@ public class ChordVoicingAlgorithm {
 	 * @param notes
 	 * @return
 	 */
-	private static int maxStretch(List<List<Integer>> notes) {
+	private static int maxStretch(Chord notes) {
 		List<Integer> fretNums = new ArrayList<>();
 		
-		for(List<Integer> note : notes) {
-			fretNums.add(note.get(1));
+		for(FretNote note : notes.getChord()) {
+			fretNums.add(note.getFretNum());
 		}
 				
 		int max = Collections.max(fretNums);
