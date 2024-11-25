@@ -78,7 +78,7 @@ public class Fretboard {
 		
 		for(int i = 0; i < fretboard.length; i++) {
 			for (int j = 0; j < fretboard[i].length; j++) {
-				if(fretboard[i][j] == note) {
+				if(fretboard[i][j].equals(note)) {
 					foundNotes.add(new FretNote(i, j));
 				}
 			}
